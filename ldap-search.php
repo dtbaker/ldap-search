@@ -13,39 +13,21 @@
 if(!defined('ABSPATH'))exit;
 
 class DtbakerLDAPSearch {
-	private static $instance = null;
 
+	private static $instance = null;
 	public static function get_instance() {
 		if ( ! self::$instance ) {
 			self::$instance = new self;
 		}
-
 		return self::$instance;
 	}
 
-	public $membership_detail_fields = array();
-	public $social_icons = array();
-
 	public function init() {
 		add_action( 'admin_init', array( $this, 'settings_init' ) );
-		add_action( 'admin_enqueue_scripts', array( $this, 'admin_css' ) );
 		add_action( 'wp_enqueue_scripts', array( $this, 'frontend_css' ) );
 		add_action( 'admin_menu', array( $this, 'admin_menu' ) );
 
 		add_shortcode('ldap_search', array($this,'shortcode_ldap_search'));
-
-		$this->membership_detail_fields = apply_filters('ldap_search_detail_fields', array(
-			'role' => 'Role (member, committee, etc..)',
-			'rfid' => 'RFID Key',
-			'xero_id' => 'Xero Contact',
-		));
-
-		$this->social_icons = apply_filters('ldap_search_icons', array(
-			'facebook' => 'Facebook',
-			'twitter' => 'Twitter',
-			'google-plus' => 'Google+',
-			'envelope' => 'Email',
-		));
 	}
 
 	public function admin_menu(){
@@ -70,7 +52,6 @@ class DtbakerLDAPSearch {
 		return ob_get_clean();
 	}
 
-
 	public function menu_settings_callback(){
 		?>
 		<div class="wrap">
@@ -90,10 +71,6 @@ class DtbakerLDAPSearch {
 			</div> <!-- end poststuff -->
 		</div>
 		<?php
-	}
-	
-	public function widgets_init(){
-
 	}
 
 	public function settings_init() {
@@ -160,53 +137,15 @@ class DtbakerLDAPSearch {
 		);
 		register_setting( $search_settings_page, 'ldap_search_'.$key );
 
-
 	}
 
 	public function settings_section_callback(){
 		echo '<p>Please set the LDAP Search settings below:</p>';
 	}
-	public function settings_callback_ldap_hostname(){
-		$setting = esc_attr( get_option( 'ldap_search_hostname' ) );
-		?> <input type="text" name="ldap_search_hostname" placeholder="e.g. localhost" value="<?php echo $setting;?>"><?php
-	}
-
-	public function settings_callback_ldap_tree(){
-		$setting = esc_attr( get_option( 'ldap_search_tree' ) );
-		?> <input type="text" name="ldap_search_tree" placeholder="e.g. localhost" value="<?php echo $setting;?>"><?php
-	}
-
 
 	public function frontend_css() {
 		wp_register_style( 'ldap_search_frontend', plugins_url( 'css/ldap-frontend.css', __FILE__ ) , false, '1.0.1' );
 		wp_enqueue_style( 'ldap_search_frontend' );
-	}
-	public function admin_css() {
-	}
-
-
-
-	// we need this in the post_meta field so visual composer can output the single html field from a meta grid option.
-	public function membership_contact_html($post_id){
-		ob_start();
-		$contact = get_post_meta( $post_id, 'membership_contact', true );
-		if( !$contact || !is_array($contact) ){
-			$contact = array();
-		}
-		if($contact) {
-
-			foreach ( $this->social_icons as $icon_name => $icon_title ) {
-				if ( isset( $contact[ $icon_name ] ) ) {
-					?>
-
-					<a href="<?php echo esc_attr( $contact[ $icon_name ] ); ?>" target="_blank"><i
-							class="fa fa-<?php echo esc_attr( $icon_name ); ?>"></i></a>
-					<?php
-				}
-			}
-		}
-		return ob_get_clean();
-
 	}
 
 
