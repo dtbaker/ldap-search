@@ -1,0 +1,36 @@
+@device_phone_portrait: ~"(max-device-width: 480px) and (orientation: portrait)";
+
+.ldap_search_wrap{
+  border:1px solid #f7f7f7;
+  padding:20px;
+  .ldap_search_form{
+    input[type="text"]{
+      width: 400px;
+    }
+  }
+  .ldap_search_results{
+    margin:0;
+    padding:20px 0;
+    display: block;
+    text-align: center;
+    li{
+      list-style:none;
+      vertical-align: top;
+      margin:2%;
+      padding:1%;
+      display:inline-block;
+      border:1px solid #CCC;
+      width: 28%;
+      min-height:200px;
+      box-shadow: 3px 3px 14px -1px rgba(0,0,0,0.75);
+      h3{
+        margin:0;
+        padding:2px 0 5px;
+      }
+      .debug{
+        color:#CCC;
+        font-size:10px;
+      }
+    }
+  }
+}
