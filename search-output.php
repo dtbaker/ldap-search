@@ -2,8 +2,17 @@
 
 if(!defined('ABSPATH'))exit;
 
+if(!isset($_POST['ldap_search'])){
+  ?>
+<div class="ldap_search_wrap">
+			<form action="" method="post" class="ldap_search_form">
+				<input type="text" name="ldap_search" value=""> <input type="submit" name="submit" value="Search">
+			</form>
+		</div>
+	<?php
+}else{
 
-$search_string = isset($_POST['ldap_search']) ? '(cn='.(preg_replace('#[^a-zA-Z0-9]#','',$_POST['ldap_search'])).'*)' : '(cn=*)';
+$search_string = isset($_POST['ldap_search']) ? '(cn=*'.(preg_replace('#[^a-zA-Z0-9 ]#','',$_POST['ldap_search'])).'*)' : '(cn=*)';
 
 // connect
 $ldapconn = ldap_connect(get_option('ldap_search_hostname')) or die("Could not connect to LDAP server.");
@@ -52,3 +61,4 @@ if($ldapconn) {
 
 // all done? clean up
 ldap_close($ldapconn);
+}
