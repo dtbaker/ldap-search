@@ -2,7 +2,7 @@
 
 if(!defined('ABSPATH'))exit;
 
-if(!isset($_POST['ldap_search'])){
+if(empty($_POST['ldap_search'])){
   ?>
 <div class="ldap_search_wrap">
 			<form action="" method="post" class="ldap_search_form">
@@ -33,7 +33,7 @@ if($ldapconn) {
 			unset($data['count']);
 			// sort results
 			usort($data, function($a, $b) {
-			    return strnatcmp( $a['title'][0],  $b['title'][0] );
+			    return strnatcmp( $a['cn'][0],  $b['cn'][0] );
 			});
 	
 			$template_file = locate_template('ldap-search-item.php');
