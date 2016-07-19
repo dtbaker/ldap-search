@@ -27,30 +27,41 @@ if($ldapconn) {
 
 		$result = ldap_search($ldapconn, get_option('ldap_search_tree'), $search_string) or die ("Error in search query: ".ldap_error($ldapconn));
 		$data = ldap_get_entries($ldapconn, $result);
-
-		$template_file = locate_template('ldap-search-item.php');
-		if($template_file && is_readable($template_file)){
-			//
+		
+		if($data){
+			$result_count = $data['count'];
+			unset($data['count']);
+			// sort results
+			usort($data, function($a, $b) {
+			    return strnatcmp( $a['title'][0],  $b['title'][0] );
+			});
+	
+			$template_file = locate_template('ldap-search-item.php');
+			if($template_file && is_readable($template_file)){
+				//
+			}else{
+				$template_file = plugin_dir_path( __FILE__ ) . 'search-output-item.php';
+			}
+			?>
+			<div class="ldap_search_wrap">
+				<h2><?php echo ldap_count_entries($ldapconn, $result);?> results: </h2>
+				<form action="" method="post" class="ldap_search_form">
+					<input type="text" name="ldap_search" value="<?php echo esc_attr(isset($_POST['ldap_search']) ? $_POST['ldap_search'] : '');?>"> <input type="submit" name="submit" value="Search">
+				</form>
+				<ul class="ldap_search_results">
+					<?php for ($i=0; $i<$result_count; $i++) {
+						$result = $data[$i];
+						?>
+						<li>
+							<?php include($template_file); ?>
+						</li>
+					<?php } ?>
+				</ul>
+			</div>
+			<?php
 		}else{
-			$template_file = plugin_dir_path( __FILE__ ) . 'search-output-item.php';
+			echo "No results";
 		}
-		?>
-		<div class="ldap_search_wrap">
-			<h2><?php echo ldap_count_entries($ldapconn, $result);?> results: </h2>
-			<form action="" method="post" class="ldap_search_form">
-				<input type="text" name="ldap_search" value="<?php echo esc_attr(isset($_POST['ldap_search']) ? $_POST['ldap_search'] : '');?>"> <input type="submit" name="submit" value="Search">
-			</form>
-			<ul class="ldap_search_results">
-				<?php for ($i=0; $i<$data["count"]; $i++) {
-					$result = $data[$i];
-					?>
-					<li>
-						<?php include($template_file); ?>
-					</li>
-				<?php } ?>
-			</ul>
-		</div>
-		<?php
 
 		// print number of entries found
 	} else {
